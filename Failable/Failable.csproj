@@ -7,12 +7,12 @@
     <GeneratePackageOnBuild>True</GeneratePackageOnBuild>
     <Title>Failable</Title>
     <Description>Tool to wrap exceptions</Description>
-    <Authors>Kasper Dahlt Tangen</Authors>
+    <Authors>Kasper Dahl Tangen</Authors>
     <Copyright>MIT License</Copyright>
     <PackageIcon>Failable.png</PackageIcon>
     <PackageReadmeFile>README.md</PackageReadmeFile>
     <RepositoryType>git</RepositoryType>
-    <PackAsTool>True</PackAsTool>
+    <PackAsTool>False</PackAsTool>
     <NeutralLanguage>en-US</NeutralLanguage>
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
     <IncludeSymbols>True</IncludeSymbols>
@@ -20,6 +20,9 @@
     <RepositoryUrl>https://github.com/kasperdt/Failable</RepositoryUrl>
     <SymbolPackageFormat>snupkg</SymbolPackageFormat>
     <GenerateDocumentationFile>False</GenerateDocumentationFile>
+    <AssemblyVersion>1.0.0.1</AssemblyVersion>
+    <Version>1.0.1-alpha</Version>
+    <FileVersion>$(AssemblyVersion)</FileVersion>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
