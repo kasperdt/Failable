@@ -1,4 +1,5 @@
-﻿using System.Security.Cryptography.X509Certificates;
+﻿using System.Reflection.Metadata.Ecma335;
+using System.Security.Cryptography.X509Certificates;
 
 namespace FailableLib;
 
@@ -28,7 +29,14 @@ public class ExpectedFailureException<T> : ExpectedFailureException
     }
 }
 
-public readonly struct Failable<T>
+public interface IFailable<T>
+{
+    public T Ok {  get; }
+    public bool IsOk { get; }
+    public Exception? MaybeFailure { get; }
+}
+
+public readonly struct Failable<T> : IFailable<T>
 {
     public T? MaybeOk { get; }
 
@@ -53,7 +61,7 @@ public readonly struct Failable<T>
     public static implicit operator Failable<T>(T ok) => new(ok);
     public static implicit operator Failable<T>(Exception failure) => new(failure);
     public static implicit operator T(Failable<T> failable) => failable.Ok;
-    public static implicit operator Exception(Failable<T> failable) => failable.Failure; //?
+    //public static implicit operator Exception(Failable<T> failable) => failable.Failure; //?
 
 
     public void ThrowIfFailure()
@@ -79,8 +87,98 @@ public readonly struct Failable<T>
     public async Task<Failable<TNew>> IfOkAsync<TNew>(Func<T, Task<Failable<TNew>>> okAsync) 
         => IsOk ? await okAsync(Ok) : Failure;
 
+    public Failable<Nil> IfOkDo(Action<T> ok)
+    {
+        if (IsOk)
+        {
+            ok(Ok);
+            return new Nil();
+        }
+        return Failure;
+    }
+
+    public async Task<Failable<Nil>> IfOkDoAsync(Func<T, Task> ok)
+    {
+        if (IsOk)
+        {
+            await ok(Ok);
+            return new Nil();
+        }
+        return Failure;
+    }
+
+
+    public Failable<TNew> IfOkTry<TNew>(Func<T, Failable<TNew>> ok)
+    {
+        if (IsOk)
+        {
+            try
+            {
+                return ok(MaybeOk!);
+            }
+            catch (Exception e)
+            {
+                return e;
+            }
+        }
+        return MaybeFailure!;
+    }
+
+    public async Task<Failable<TNew>> IfOkTryAsync<TNew>(Func<T, Task<Failable<TNew>>> ok)
+    {
+        if (IsOk)
+        {
+            try
+            {
+                return await ok(MaybeOk!);
+            }
+            catch (Exception e)
+            {
+                return e;
+            }
+        }
+        return MaybeFailure!;
+    }
+
+    public Failable<Nil> IfOkTryDo(Action<T> ok)
+    {
+        if (IsOk)
+        {
+            try
+            {
+                ok(MaybeOk!);
+                return new Nil();
+            }
+            catch (Exception e)
+            {
+                return e;
+            }
+        }
+        return MaybeFailure!;
+    }
+
+    public async Task<Failable<Nil>> IfOkTryDoAsync(Func<T, Task> ok)
+    {
+        if (IsOk)
+        {
+            try
+            {
+                await ok(MaybeOk!);
+                return new Nil();
+            }
+            catch (Exception e)
+            {
+                return e;
+            }
+        }
+        return MaybeFailure!;
+    }
+
     public Failable<T> IfFailure(Func<Exception, Exception> failure)
         => IsOk ? Ok : failure(Failure);
+
+    //public Failable<T> IfFailure(Func<Exception, Exception> failure)
+    //    => IsOk ? Ok : failure(Failure);
 }
 
 public static class Failable
@@ -97,7 +195,21 @@ public static class Failable
             return ex;
         }
     }
+
+    public static async Task<Failable<T>> TryAsync<T>(Func<Task<Failable<T>>> toTry)
+    {
+        try
+        {
+            return await toTry();
+        }
+        catch (Exception ex)
+        {
+            return ex;
+        }
+    }
 }
+
+public readonly struct Nil { }
 
 public static class FailableExtensions
 {
