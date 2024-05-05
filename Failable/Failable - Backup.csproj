@@ -20,8 +20,8 @@
     <RepositoryUrl>https://github.com/kasperdt/Failable</RepositoryUrl>
     <SymbolPackageFormat>snupkg</SymbolPackageFormat>
     <GenerateDocumentationFile>False</GenerateDocumentationFile>
-    <AssemblyVersion>1.0.2.0</AssemblyVersion>
-    <Version>1.0.2</Version>
+    <AssemblyVersion>1.0.0.1</AssemblyVersion>
+    <Version>1.0.1</Version>
     <FileVersion>$(AssemblyVersion)</FileVersion>
   </PropertyGroup>
 
