@@ -1,4 +1,4 @@
-﻿namespace FailableLib;
+﻿namespace FailableLib.AsyncFailable;
 
 public static class AsyncFailableExtensions
 {
